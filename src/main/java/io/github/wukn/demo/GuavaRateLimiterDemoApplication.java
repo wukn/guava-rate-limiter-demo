@@ -18,6 +18,8 @@ public class GuavaRateLimiterDemoApplication {
     public CommandLineRunner run(ApplicationContext ctx) {
         return args -> {
             limit();
+            System.out.println("simulate burst request traffic");
+            limit2();
         };
     }
 
@@ -32,4 +34,14 @@ public class GuavaRateLimiterDemoApplication {
             System.out.println(waitTime);
         }
     }
+
+    public void limit2() {
+        // 每秒向桶中放入5个Token
+        final RateLimiter limiter = RateLimiter.create(5);
+
+        // 产生突发流量时，一次从桶中获取5个Token
+        System.out.println(limiter.acquire(5));
+        System.out.println(limiter.acquire());
+    }
+
 }
