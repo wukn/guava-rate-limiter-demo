@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import java.util.concurrent.TimeUnit;
+
 @SpringBootApplication
 public class GuavaRateLimiterDemoApplication {
 
@@ -22,6 +24,8 @@ public class GuavaRateLimiterDemoApplication {
             limit2();
             System.out.println("simulate burst request traffic after bucker is full");
             limit3();
+            System.out.println("try acquire");
+            limit4();
         };
     }
 
@@ -56,6 +60,27 @@ public class GuavaRateLimiterDemoApplication {
         // 产生突发流量时，一次从桶中获取5个Token
         System.out.println(limiter.acquire(5));
         System.out.println(limiter.acquire());
+    }
+
+    public void limit4() {
+        // 每秒向桶中放入5个Token，缓冲时间为1秒
+        final RateLimiter limiter = RateLimiter.create(5, 1, TimeUnit.SECONDS);
+
+        // 尝试从桶中获取Token，获取不到则不等待立即返回false
+        boolean result = limiter.tryAcquire();
+        if (result) {
+            System.out.println("get token success!");
+        } else {
+            System.out.println("get token failed.");
+        }
+
+        // 尝试从桶中获取Token，只等待10毫秒
+        result = limiter.tryAcquire(10, TimeUnit.MILLISECONDS);
+        if (result) {
+            System.out.println("get token success!");
+        } else {
+            System.out.println("get token failed.");
+        }
     }
 
 }
