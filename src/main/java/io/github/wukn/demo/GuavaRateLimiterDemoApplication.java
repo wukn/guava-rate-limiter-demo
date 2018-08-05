@@ -20,6 +20,8 @@ public class GuavaRateLimiterDemoApplication {
             limit();
             System.out.println("simulate burst request traffic");
             limit2();
+            System.out.println("simulate burst request traffic after bucker is full");
+            limit3();
         };
     }
 
@@ -38,6 +40,18 @@ public class GuavaRateLimiterDemoApplication {
     public void limit2() {
         // 每秒向桶中放入5个Token
         final RateLimiter limiter = RateLimiter.create(5);
+
+        // 产生突发流量时，一次从桶中获取5个Token
+        System.out.println(limiter.acquire(5));
+        System.out.println(limiter.acquire());
+    }
+
+    public void limit3() throws Exception {
+        // 每秒向桶中放入5个Token
+        final RateLimiter limiter = RateLimiter.create(5);
+
+        // 休眠1秒，让桶中被放满Token
+        Thread.sleep(1000L);
 
         // 产生突发流量时，一次从桶中获取5个Token
         System.out.println(limiter.acquire(5));
